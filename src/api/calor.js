@@ -1,12 +1,9 @@
 function responseHandler(response) {
-    if (!response.ok) {
-        throw response.status;
-    }
     return response.json();
 }
 
 function getJson(url) {
-    return fetch(url)
+    return fetch(url, { mode: 'no-cors'})
         .then(responseHandler);
 }
 
@@ -18,7 +15,7 @@ export function discover(calorUrl) {
 
 export function latestReading(calorUrl, thermometerName) {
     const thermUrl = `${calorUrl}/latest/${thermometerName}`;
-    return getJson(url);
+    return getJson(thermUrl);
 }
 
 /**
