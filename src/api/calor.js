@@ -1,9 +1,9 @@
 function responseHandler(response) {
-    return response.json();
+    return response.json()
 }
 
 function getJson(url) {
-    return fetch(url, { mode: 'no-cors'})
+    return fetch(url)
         .then(responseHandler);
 }
 

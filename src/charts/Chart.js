@@ -7,7 +7,7 @@ import {Line} from "react-chartjs-2";
 function getChartRange(unit) {
     switch (unit) {
         case 'F':
-            return [-100, 130];
+            return [-0, 130];
         case 'K':
             return [0, 333.16];
         case 'C':
@@ -70,7 +70,9 @@ function Chart(props) {
 
     const label = `${name} Temperatures`;
     const chartFormatted = formatData(data, unit);
+    const range = getChartRange(unit);
     const chartOpts = {
+        title: name,
         scales: {
             xAxes: [{
                 type: 'time',
@@ -78,13 +80,47 @@ function Chart(props) {
                 time: {
                     unit: 'hour'
                 }
+            }],
+            yAxes: [{
+                ticks: {
+                    beginAtZero: false,
+                    min: range[0],
+                    max: range[1],
+                    stepValue: 2,
+                }
             }]
         }
     };
 
+    const chartData = {
+        label: name,
+        datasets: [
+            {
+                spanGaps: false,
+                fill: false,
+                backgroundColor: 'rgba(75,192,192,0.4)',
+                borderColor: 'rgba(75,192,192,1)',
+                borderCapStyle: 'butt',
+                borderDash: [],
+                borderDashOffset: 0.0,
+                borderJoinStyle: 'miter',
+                pointBorderColor: 'rgba(75,192,192,1)',
+                pointBackgroundColor: '#fff',
+                pointBorderWidth: 1,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+                pointHoverBorderColor: 'rgba(220,220,220,1)',
+                pointHoverBorderWidth: 2,
+                pointRadius: 1,
+                pointHitRadius: 10,
+                data: chartFormatted
+            }
+        ],
+    };
+
     // The X data on the chart is the times, the y data is the temp
     return (<Line
-            data={chartFormatted}
+            data={chartData}
             options={chartOpts}
         />
     )

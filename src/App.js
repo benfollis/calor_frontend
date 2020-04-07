@@ -17,12 +17,12 @@ function App() {
             setData(newData)
           });
     }
-  }, [data]);
+  }, [data, setData]);
 
   return (
     <div className="App">
       <header className="App-header">
-        <Chart name="OneWire" data={data} unit='F'/>
+          {data && <Chart name="OneWire" data={data} unit='F'/>}
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
