@@ -1,8 +1,10 @@
-import React from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {Reading} from "../proptypesShapes";
 import {Line} from "react-chartjs-2";
-
+import {readingsBetween} from "../api/calor";
+import {ServerContext} from "../ServerContext";
+import _ from 'lodash';
 
 function getChartRange(unit) {
     switch (unit) {
@@ -12,6 +14,8 @@ function getChartRange(unit) {
             return [0, 333.16];
         case 'C':
             return [-60, 60];
+        default:
+            return [-100, 100];
     }
 }
 
@@ -64,15 +68,27 @@ function formatData(data, unit) {
 function Chart(props) {
     const {
         name,
-        data,
         unit, // the desired unit of display
     } = props;
+
+    const [calorUrl] = useContext(ServerContext);
+    const [data, setData] = useState([]);
+    const [unloaded, setUnloaded] = useState(true);
+    useEffect(() => {
+        if (_.isEmpty(data) && unloaded && !_.isEmpty(calorUrl) && !_.isEmpty(name)) {
+            readingsBetween(calorUrl, name)
+                .then((newData) => {
+                    console.log(newData);
+                    setData(newData)
+                });
+            setUnloaded(true)
+        }
+    }, [data, unloaded, calorUrl, name]);
 
     const label = `${name} Temperatures`;
     const chartFormatted = formatData(data, unit);
     const range = getChartRange(unit);
     const chartOpts = {
-        title: name,
         scales: {
             xAxes: [{
                 type: 'time',
@@ -93,7 +109,7 @@ function Chart(props) {
     };
 
     const chartData = {
-        label: name,
+        label,
         datasets: [
             {
                 spanGaps: false,
