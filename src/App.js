@@ -9,10 +9,8 @@ function App() {
     return (
         <div className="App">
             <ServerProvider>
-                <header className="App-header">
                     <ServerUrlInput/>
                     <ChartScreen/>
-                </header>
             </ServerProvider>
         </div>
     );

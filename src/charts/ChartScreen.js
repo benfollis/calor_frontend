@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {ServerContext} from "../ServerContext";
 import _ from "lodash";
 import {discover} from "../api/calor";
-import Chart from "./Chart";
+import ChartContainer from "./ChartContainer";
 
 
 function ChartScreen(props) {
@@ -22,7 +22,7 @@ function ChartScreen(props) {
     function getCharts() {
         return thermometers.map((thermometer) => {
             return (
-                <Chart
+                <ChartContainer
                     name={thermometer}
                     key={thermometer}
                 />

@@ -5,11 +5,12 @@ import {Line} from "react-chartjs-2";
 import {readingsBetween} from "../api/calor";
 import {ServerContext} from "../ServerContext";
 import _ from 'lodash';
+import {convertUnit} from "./utils/conversionFunctions";
 
 function getChartRange(unit) {
     switch (unit) {
         case 'F':
-            return [-0, 130];
+            return [-0, 120];
         case 'K':
             return [0, 333.16];
         case 'C':
@@ -19,34 +20,6 @@ function getChartRange(unit) {
     }
 }
 
-const conversionFunctions = {
-    'C': {
-        'C': (t) => t,
-        'K': (t) => t + 273.15,
-        'F': (t) => (t * 1.8) + 32
-
-    },
-    'F': {
-        'F': (t) => t,
-        'C': (t) => (t - 32) / 1.8,
-        'K': (t) => ((t - 32) / 1.8) + 273.15
-    },
-    'K': {
-        'K': (t) => t,
-        'C': (t) => t - 273.15,
-        'F': (t) => ((t - 273.15) * 1.8) + 32
-    }
-};
-
-function convertUnit(reading, outputUnit) {
-    const converter = conversionFunctions[reading.Unit][outputUnit];
-    const newTemp = converter(reading.Temp);
-    return {
-        ...reading,
-        Temp: newTemp,
-        Unit: outputUnit,
-    };
-}
 
 function formatData(data, unit) {
     const tempConverted = data.map((reading) => convertUnit(reading, unit));
@@ -85,10 +58,13 @@ function Chart(props) {
         }
     }, [data, unloaded, calorUrl, name]);
 
-    const label = `${name} Temperatures`;
     const chartFormatted = formatData(data, unit);
     const range = getChartRange(unit);
     const chartOpts = {
+        maintainAspectRatio: false,
+        legend: {
+            display: false,
+        },
         scales: {
             xAxes: [{
                 type: 'time',
@@ -98,21 +74,28 @@ function Chart(props) {
                 }
             }],
             yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: `°${unit}`,
+                },
                 ticks: {
                     beginAtZero: false,
                     min: range[0],
                     max: range[1],
-                    stepValue: 2,
+                    maxTicksLimit: 22,
+                    stepValue: 0.5,
                 }
             }]
         }
     };
 
     const chartData = {
-        label,
         datasets: [
             {
                 spanGaps: false,
+                legend: {
+                    display: false,
+                },
                 fill: false,
                 backgroundColor: 'rgba(75,192,192,0.4)',
                 borderColor: 'rgba(75,192,192,1)',
@@ -135,10 +118,14 @@ function Chart(props) {
     };
 
     // The X data on the chart is the times, the y data is the temp
-    return (<Line
-            data={chartData}
-            options={chartOpts}
-        />
+    return (
+        <div className="Chart-Container">
+            <Line
+                mainta
+                data={chartData}
+                options={chartOpts}
+            />
+        </div>
     )
 }
 
