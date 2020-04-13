@@ -7,17 +7,21 @@ import ChartContainer from "./ChartContainer";
 
 function ChartScreen(props) {
 
-        const [calorUrl] = useContext(ServerContext);
+    const [calorUrl, setCalorUrl] = useContext(ServerContext);
     const [thermometers, setThermometers] = useState([]);
     useEffect(() => {
         if (!_.isEmpty(calorUrl)) {
-            console.log(calorUrl);
             discover(calorUrl)
                 .then((therms) => {
                     setThermometers(therms);
+                })
+                .catch(() => {
+                    // TODO: that calor url is invalid,
+                    // we need to error
+
                 });
         }
-    }, [calorUrl, setThermometers]);
+    }, [calorUrl, setCalorUrl, setThermometers]);
 
     function getCharts() {
         return thermometers.map((thermometer) => {

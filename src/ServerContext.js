@@ -2,14 +2,20 @@
 A simple context that stores what the active server's URL is
  */
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 
 const EMPTY_STATE = ['', () => {}];
 const ServerContext = React.createContext(EMPTY_STATE);
 
 function ServerProvider(props) {
-    const [serverUrl, setServerUrl] = useState('');
+
+    const storedValue = localStorage.getItem("serverUrl") || '';
+    const [serverUrl, setServerUrl] = useState(storedValue);
+
+    useEffect(() => {
+        localStorage.setItem("serverUrl", serverUrl);
+    }, [serverUrl]);
 
     const { children } = props;
     return (

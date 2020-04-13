@@ -1,11 +1,11 @@
 import React, {useContext, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
-import {Reading} from "../proptypesShapes";
 import {Line} from "react-chartjs-2";
 import {readingsBetween} from "../api/calor";
 import {ServerContext} from "../ServerContext";
 import _ from 'lodash';
 import {convertUnit} from "./utils/conversionFunctions";
+import {startEndBeforeNow } from "./utils/dateFunctions";
 
 function getChartRange(unit) {
     switch (unit) {
@@ -41,22 +41,27 @@ function formatData(data, unit) {
 function Chart(props) {
     const {
         name,
+        period, // string form of the number of days to view
         unit, // the desired unit of display
     } = props;
 
     const [calorUrl] = useContext(ServerContext);
     const [data, setData] = useState([]);
-    const [unloaded, setUnloaded] = useState(true);
+    const [loadedPeriod, setLoadedPeriod] = useState('');
+
     useEffect(() => {
-        if (_.isEmpty(data) && unloaded && !_.isEmpty(calorUrl) && !_.isEmpty(name)) {
-            readingsBetween(calorUrl, name)
+        if (period !== loadedPeriod &&
+            !_.isEmpty(calorUrl) &&
+            !_.isEmpty(name)) {
+            const numDays = parseInt(period, 10);
+            const range = startEndBeforeNow(numDays);
+            readingsBetween(calorUrl, name, range.start, range.end)
                 .then((newData) => {
-                    console.log(newData);
-                    setData(newData)
+                    setData(newData);
+                    setLoadedPeriod(period)
                 });
-            setUnloaded(true)
         }
-    }, [data, unloaded, calorUrl, name]);
+    }, [data, calorUrl, name, period, loadedPeriod]);
 
     const chartFormatted = formatData(data, unit);
     const range = getChartRange(unit);
@@ -131,13 +136,14 @@ function Chart(props) {
 
 Chart.propTypes = {
     name: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(Reading),
+    period: PropTypes.string,
     unit: PropTypes.string,
 };
 
 Chart.defaultProps = {
     data: [],
     unit: 'C',
+    period: '1,'
 };
 
 export default Chart;

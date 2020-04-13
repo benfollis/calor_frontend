@@ -31,11 +31,11 @@ export function readingsBetween(calorUrl, thermometerName, startTime, endTime) {
     const urlString = `${calorUrl}/between/${thermometerName}`;
     const url = new URL(urlString);
     if (startTime) {
-        const unixStart = startTime.getTime() / 1000;
+        const unixStart = Math.floor(startTime.getTime() / 1000);
         url.searchParams.set('start', unixStart.toString(10));
     }
     if (endTime) {
-        const unixEnd = endTime.getTime() / 1000;
+        const unixEnd = Math.ceil(endTime.getTime() / 1000);
         url.searchParams.set('end', unixEnd.toString(10));
     }
     return getJson(url);

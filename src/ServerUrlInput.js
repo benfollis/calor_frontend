@@ -1,11 +1,12 @@
 import React, {useContext, useState} from 'react';
 import {ServerContext} from "./ServerContext";
 import {TextField, Button} from "@material-ui/core";
+import {canonicalize} from "./charts/utils/urlFunctions";
 
 
 function ServerUrlInput(props) {
-    const [, setCalorUrl] = useContext(ServerContext);
-    const [url, setUrl] = useState('');
+    const [calorUrl, setCalorUrl] = useContext(ServerContext);
+    const [url, setUrl] = useState(calorUrl);
 
     function handleUrlChange(event) {
         const {value} = event.target;
@@ -19,7 +20,7 @@ function ServerUrlInput(props) {
                 onChange={handleUrlChange}
             />
             <Button
-                onClick={() => setCalorUrl(url)}
+                onClick={() => setCalorUrl(canonicalize(url))}
             >
                 Load Server Graphs
             </Button>
